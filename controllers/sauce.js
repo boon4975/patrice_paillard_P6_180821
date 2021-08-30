@@ -44,20 +44,20 @@ exports.usersLike = (req, res, next) => {
 
             if(actionLike == 1 && !listUserLike.includes(userLike)){ // User like la sauce
                 sauce.likes += 1;
-                sauce.usersLiked.push(req.body.userId)
+                sauce.usersLiked.push(req.body.userId);
                 sauce.save();
                 res.status(200).json({ message: 'like sauce'});
             }else if(actionLike == -1 && !listUserDislike.includes(userLike)){ // User Dislike la sauce
                 sauce.dislikes += 1;
-                sauce.usersDisliked.push(req.body.userId)
+                sauce.usersDisliked.push(req.body.userId);
                 sauce.save();
-                res.status(200).json({ message: 'like ok'});
+                res.status(200).json({ message: 'dislike ok'});
             }else if(actionLike == 0 && listUserLike.includes(userLike)){ // User annule son like
                 sauce.likes -= 1;
                 let delpos = listUserLike.indexOf(userLike);
                 listUserLike.splice(delpos,1);
                 sauce.save();
-                res.status(200).json({ message: 'User annule son like'})
+                res.status(200).json({ message: 'User annule son like'});
             }else if(actionLike == 0 && listUserDislike.includes(userLike)){ //User annule son Dislike
                 sauce.dislikes -= 1;
                 let delpos = listUserDislike.indexOf(userLike);
@@ -67,50 +67,8 @@ exports.usersLike = (req, res, next) => {
             }
         })
         .catch((error) => res.status(500).json({ error }));
-}
-
-exports.usersLiked = (req, res, next) => {
-    Sauce.findOne({ _id: req.params.id})
-        .then(sauce => {
-            userLike = req.body.userId;
-            listUserLike = sauce.usersLiked;
-            if(!listUserLike.includes(userLike)){
-                sauce.likes += 1;
-                sauce.usersLiked.push(req.body.userId)
-                sauce.save();
-                res.status(200).json({ message: 'like ok'});
-            }else{
-                sauce.likes -= 1;
-                let delpos = listUserLike.indexOf(userLike);
-                listUserLike.splice(delpos,1);
-                sauce.save();
-                res.status(200).json({ message: 'like déjà fait'});
-            };
-        })
-        .catch((error) => res.status(500).json({ error }));
 };
 
-exports.usersDisliked = (req, res, next) => {
-    Sauce.findOne({ _id: req.params.id})
-        .then(sauce => {
-            userDislike = req.body.userId;
-            listUserDislike = sauce.usersDisliked;
-            console.log(listUserDislike)
-            if(!listUserDislike.includes(userDislike)){
-                sauce.dislikes += 1;
-                sauce.usersDisliked.push(req.body.userId)
-                sauce.save();
-                res.status(200).json({ message: 'like ok'});
-            }else{
-                sauce.dislikes -= 1;
-                let delpos = listUserDislike.indexOf(userDislike);
-                listUserDislike.splice(delpos,1);
-                sauce.save();
-                res.status(200).json({ message: 'like déjà fait'});
-            };
-        })
-        .catch((error) => res.status(500).json({ error }));
-};
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id})
         .then(sauce => {
