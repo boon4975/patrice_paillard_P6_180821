@@ -37,10 +37,20 @@ exports.modifySauce = (req, res, next) => {
 exports.usersLiked = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id})
         .then(sauce => {
+            userLike = req.body.userId;
+            listUser = sauce.usersLiked;
+            if(!listUser.includes(userLike)){
                 sauce.likes += 1;
                 sauce.usersLiked.push(req.body.userId)
                 sauce.save();
-                res.status(200).json({ sauce });
+                res.status(200).json({ message: 'like ok'});
+            }else{
+                sauce.likes -= 1;
+                let delpos = listUser.indexOf(userLike);
+                listUser.splice(delpos,1);
+                sauce.save();
+                res.status(200).json({ message: 'like déjà fait'});
+            };
         })
         .catch((error) => res.status(500).json({ error }));
 };
