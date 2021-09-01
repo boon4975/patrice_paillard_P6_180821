@@ -9,11 +9,17 @@ const db =
     "token": process.env.TOKEN_AUTH
   };
 
+  /**
+   * Création de compte utilisateur:
+   * vérifie si l'adresse saisie existe => retourne un message 'adresse déjà utilisé'
+   * sinon HASH + SALT mot de passe
+   * sauvegarde dans la BDD
+   */
 exports.signup = ((req, res, next) => {
     User.findOne({ email: req.body.email})
         .then( user => {
             if(user) {
-                return res.status(401).json({ message: 'email déjà utilisé' });
+                return res.status(401).json({ message: 'Adresse email déjà utilisé' });
             }
             bcrypt.hash(req.body.password, 10)
                 .then(hash => {
@@ -22,7 +28,7 @@ exports.signup = ((req, res, next) => {
                         password: hash
                     });
                     user.save()
-                    .then( () => res.status(201).json({ message: 'Utilisateur créé'}))
+                    .then( () => res.status(201).json({ message: 'Utilisateur créé' }))
                     .catch(error => res.status(400).json({ error }))
                 })
                 .catch(error => res.status(500).json({ error }));
@@ -30,16 +36,22 @@ exports.signup = ((req, res, next) => {
         .catch((error => res.status(500).json({ error })));
 });
 
+/**
+ * Connexion utilisateur:
+ * vérifie si l'email saisi existe => si non : retourne erreur de connexion
+ * si oui compare le HASH saisis au HASH enregistre dans la BDD
+ * retourne le userId et un Token d'authentification valable 24h
+ */
 exports.login = ((req, res, next) => {
     User.findOne({ email: req.body.email})
         .then( user => {
             if(!user) {
-                return res.status(401).json({ message: 'Utilisateur non trouvé'});
+                return res.status(401).json({ message: 'Utilisateur non trouvé' });
             }
             bcrypt.compare(req.body.password, user.password)
             .then(valid => {
                 if(!valid) {
-                    return res.status(401).json({ message: 'Mot de passe incorrect'});
+                    return res.status(401).json({ message: 'Mot de passe incorrect' });
                 }
                 res.status(200).json({
                     userId: user._id,

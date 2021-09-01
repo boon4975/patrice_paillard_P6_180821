@@ -1,6 +1,13 @@
 const Sauce = require('../models/Sauce');
 const fs = require('fs');
 
+/**
+ * Création d'une sauce: 
+ * createSauce recupère de la requête les données saisies par l'utilisateur pour créer une sauce avec le modèle Sauce.js
+ * initialise à 0 les likes et dislikes
+ * initialise un tableau vide stockant les userId qui likes / dislikes la sauce
+ * sauvegarde dans la BDD
+ */
 exports.createSauce = ((req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
     delete sauceObject._id;
@@ -17,12 +24,21 @@ exports.createSauce = ((req, res, next) => {
         .catch(error => res.status(400).json({ error }))
 });
 
+/**
+ * Sélectionne une sauce:
+ * renvoi les données de la BDD de la sauce dont l'id est en params de la requête
+ */
 exports.getOneSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id})
         .then(sauce => res.status(200).json(sauce))
         .catch(error => res.status(404).json({ error }));
 };
 
+/**
+ * Modification de la sauce :
+ * si le user ne change pas l'image => update des infos textuelles saisies et sauvegarde dans la BDD
+ * si le user change l'image => suppression ancienne image, sauvegarde de la nouvelle image et met à jour la BDD
+ */
 exports.modifySauce = (req, res, next) => {
     if (!req.file) {
         const sauceObject = { ...req.body};
@@ -49,10 +65,9 @@ exports.modifySauce = (req, res, next) => {
 };
 
 /**
- * 
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ * Gestion des likes / dislikes des sauces :
+ * compte le nombre de likes ou disklikes de chaque sauce
+ * met à jour le tableau des userId qui liked ou disliked chaque sauce
  */
 exports.userLike = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id})
@@ -89,6 +104,12 @@ exports.userLike = (req, res, next) => {
         .catch((error) => res.status(500).json({ error }));
 };
 
+/**
+ * Suppression d'une sauce dans la BDD:
+ * sélectionne la sauce dont l'id est dans les params de la requête
+ * supprime le fichier image
+ * supprime la sauce dans la BDD
+ */
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id})
         .then(sauce => {
@@ -102,6 +123,10 @@ exports.deleteSauce = (req, res, next) => {
         .catch((error) => res.status(500).json({ error }));
 };
 
+/**
+ * Sélection de toutes les sauces dans la BDD:
+ * retourne l'ensemble des données des sauces
+ */
 exports.getAllSauce = (req, res, next) => {
     Sauce.find()
         .then(sauces => res.status(200).json(sauces))

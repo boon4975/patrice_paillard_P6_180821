@@ -6,6 +6,10 @@ const MIME_TYPES = {
     'image/png': 'png'
 }
 
+/**
+ * Enregistre un fichier image dans le dossier IMAGES 
+ * ajout d'un timestamp dans le nom de fichier pour etre unique
+ */
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
         callback(null, 'images')
