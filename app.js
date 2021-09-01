@@ -1,3 +1,12 @@
+const dotenv = require('dotenv');
+dotenv.config();
+const db =
+  {
+    "host": process.env.DB_HOST,
+    "username": process.env.DB_USER,
+    "password": process.env.DB_PASS
+  };
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -7,7 +16,8 @@ const userRoutes = require('./routes/user');
 const sauceRoutes = require('./routes/sauce');
 
 // connexion à la BDD MongoDB Atlas
-mongoose.connect('mongodb+srv://hottakes:Tk7HnepakfcFNDn@cluster0.mooxj.mongodb.net/HotTakes?retryWrites=true&w=majority',
+
+mongoose.connect(`mongodb+srv://${db.username}:${db.password}@${db.host}/HotTakes?retryWrites=true&w=majority`,
     {  useNewUrlParser: true,
        useUnifiedTopology: true })
     .then(() => console.log('Connexion à MongoDB réussie !'))

@@ -48,6 +48,12 @@ exports.modifySauce = (req, res, next) => {
     }
 };
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.userLike = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id})
         .then(sauce => {
