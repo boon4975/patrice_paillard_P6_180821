@@ -21,18 +21,24 @@ exports.signup = ((req, res, next) => {
             if(user) {
                 return res.status(401).json({ message: 'Adresse email déjà utilisé' });
             }
-            bcrypt.hash(req.body.password, 10)
-                .then(hash => {
-                    const user = new User({
-                        email: req.body.email,
-                        password: hash
-                    });
-                    user.save()
-                    .then( () => res.status(201).json({ message: 'Utilisateur créé' }))
-                    .catch(error => res.status(400).json({ error }))
-                })
-                .catch(error => res.status(500).json({ error }));
+            let regex = /((?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[.:'!@#$%&*_+=|(){}[?\-\]\/\\])(?!.*[<>`])).{8,}/
+            if(req.body.password.match(regex)){
+                bcrypt.hash(req.body.password, 10)
+                    .then(hash => {
+                        const user = new User({
+                            email: req.body.email,
+                            password: hash
+                        });
+                        user.save()
+                        .then( () => res.status(201).json({ message: 'Utilisateur créé' }))
+                        .catch(error => res.status(400).json({ error }))
+                    })
+                    .catch(error => res.status(500).json({ error }));
+            }else{
+                return res.status(401).json({ message: 'Le mot de passe doit comporter au moins 8 caractères dont 1 chiffre, 1 minuscule, 1 majuscule, 1 caractère spéciale '})
+            }
             })
+        
         .catch((error => res.status(500).json({ error })));
 });
 
